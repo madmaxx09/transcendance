@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  database:
+    build:
+      context: srcs/services/postgres
+      dockerfile: Dockerfile
+    image: postgres
+    container_name: postgres
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  django:
+    build:
+      context: srcs/services/django
+      dockerfile: Dockerfile
+    image: django
+    container_name: django
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./srcs/services/django/media:/app/media
+      - ./srcs/shared/build:/code/build
+      - shared-volumes:/code/openssl
+    networks:
+      - app-network
+    depends_on:
+      - database
+      - openssl
+      - truffle
+
+  ganache:
+    build:
+      context: srcs/services/ganache
+      dockerfile: Dockerfile
+    image: ganache
+    container_name: ganache
+    networks:
+      - app-network
+
+  truffle:
+    build:
+      context: srcs/services/truffle
+      dockerfile: Dockerfile
+    image: truffle
+    container_name: truffle
+    volumes:
+      - ./srcs/shared/build:/dapp/build
+    networks:
+      - app-network
+    depends_on:
+      - ganache
+
+  openssl:
+    build:
+      context: srcs/services/openssl
+      dockerfile: Dockerfile
+    image: openssl
+    container_name: openssl
+    volumes:
+      - shared-volumes:/ssl/openssl
+    networks:
+      - app-network
+
+volumes:
+  shared-volumes:
+
+networks:
+  app-network:
+    driver: bridge

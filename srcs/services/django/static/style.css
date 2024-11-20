@@ -1,0 +1,27 @@
+body {
+	background-color: black;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Audiowide', sans-serif !important;
+}
+
+.image img{
+	cursor: pointer;
+}
+
+.image label{
+	cursor: pointer;
+}
+
+#avatarImg:hover + label #cameraIcon {
+	opacity: 1;
+	pointer-events: all;
+}
+
+#cameraIcon {
+	opacity: 0;
+	pointer-events: none;
+	transition: 0.2s;
+}
